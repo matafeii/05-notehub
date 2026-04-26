@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import SearchBox from "../SearchBox/SearchBox";
 import Pagination from "../Pagination/Pagination";
 import Modal from "../Modal/Modal";
 import NoteForm from "../NoteForm/NoteForm";
 import NoteList from "../NoteList/NoteList";
-import { fetchNotes, createNote, deleteNote } from "../../services/noteService";
-import type { CreateNoteParams } from "../../services/noteService";
+import { fetchNotes } from "../../services/noteService";
 import css from "./App.module.css";
 
 const PER_PAGE = 12;
@@ -17,8 +16,6 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const queryClient = useQueryClient();
 
   const debouncedSetSearch = useDebouncedCallback((value: string) => {
     setDebouncedSearch(value);
@@ -45,31 +42,8 @@ const App = () => {
       }),
   });
 
-  const createNoteMutation = useMutation({
-    mutationFn: createNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-      setIsModalOpen(false);
-    },
-  });
-
-  const deleteNoteMutation = useMutation({
-    mutationFn: deleteNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-    },
-  });
-
   const handlePageChange = ({ selected }: { selected: number }) => {
     setPage(selected);
-  };
-
-  const handleCreateNote = async (values: CreateNoteParams) => {
-    await createNoteMutation.mutateAsync(values);
-  };
-
-  const handleDeleteNote = (id: string) => {
-    deleteNoteMutation.mutate(id);
   };
 
   const notes = notesData?.notes ?? [];
@@ -79,11 +53,13 @@ const App = () => {
     <div className={css.app}>
       <header className={css.toolbar}>
         <SearchBox value={searchQuery} onChange={handleSearchChange} />
-        <Pagination
-          pageCount={pageCount}
-          onPageChange={handlePageChange}
-          forcePage={page}
-        />
+        {pageCount > 1 && (
+          <Pagination
+            pageCount={pageCount}
+            onPageChange={handlePageChange}
+            forcePage={page}
+          />
+        )}
         <button
           className={css.button}
           onClick={() => setIsModalOpen(true)}
@@ -100,15 +76,13 @@ const App = () => {
         </p>
       )}
 
-      <NoteList notes={notes} onDelete={handleDeleteNote} />
+      {notes.length > 0 && <NoteList notes={notes} />}
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <NoteForm
-          onSubmit={handleCreateNote}
-          onCancel={() => setIsModalOpen(false)}
-          isCreating={createNoteMutation.isPending}
-        />
-      </Modal>
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <NoteForm onCancel={() => setIsModalOpen(false)} />
+        </Modal>
+      )}
     </div>
   );
 };
