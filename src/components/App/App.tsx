@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import SearchBox from "../SearchBox/SearchBox";
 import Pagination from "../Pagination/Pagination";
@@ -40,6 +40,7 @@ const App = () => {
         perPage: PER_PAGE,
         search: debouncedSearch || undefined,
       }),
+    placeholderData: keepPreviousData,
   });
 
   const handlePageChange = ({ selected }: { selected: number }) => {
