@@ -9,7 +9,22 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "prettier": "^3.8.3",
     "typescript": "~6.0.2",
     "vite": "^8.0.4"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.100.5",
+    "axios": "^1.15.2",
+    "formik": "^2.4.9",
+    "modern-normalize": "^3.0.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-paginate": "^8.3.0",
+    "use-debounce": "^10.1.1",
+    "yup": "^1.7.1"
   }
 }
