@@ -29,3 +29,13 @@
 .button:hover {
   background-color: #0b5ed7;
 }
+
+.status {
+  margin: 0 0 16px;
+  color: #495057;
+}
+
+.error {
+  margin: 0 0 16px;
+  color: #dc3545;
+}

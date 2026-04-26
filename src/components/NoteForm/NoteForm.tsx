@@ -1,55 +1,46 @@
-import { Formik, Form, Field, ErrorMessage } from 'formik'
-import * as Yup from 'yup'
-import type { NoteTag } from '../../types/note'
-import css from './NoteForm.module.css'
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import type { NoteTag } from "../../types/note";
+import css from "./NoteForm.module.css";
 
 interface NoteFormValues {
-  title: string
-  content: string
-  tag: NoteTag
+  title: string;
+  content: string;
+  tag: NoteTag;
 }
 
 export interface NoteFormProps {
-  onSubmit: (values: NoteFormValues) => Promise<void>
-  onCancel: () => void
-  isCreating: boolean
+  onSubmit: (values: NoteFormValues) => Promise<void>;
+  onCancel: () => void;
+  isCreating: boolean;
 }
 
 const validationSchema = Yup.object({
   title: Yup.string()
-    .min(3, 'Title must be at least 3 characters')
-    .max(50, 'Title must be at most 50 characters')
-    .required('Title is required'),
-  content: Yup.string().max(500, 'Content must be at most 500 characters'),
+    .min(3, "Title must be at least 3 characters")
+    .max(50, "Title must be at most 50 characters")
+    .required("Title is required"),
+  content: Yup.string().max(500, "Content must be at most 500 characters"),
   tag: Yup.mixed<NoteTag>()
-    .oneOf(['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'])
-    .required('Tag is required'),
-})
+    .oneOf(["Todo", "Work", "Personal", "Meeting", "Shopping"])
+    .required("Tag is required"),
+});
 
 const NoteForm = ({ onSubmit, onCancel, isCreating }: NoteFormProps) => {
   return (
     <Formik
-      initialValues={{ title: '', content: '', tag: 'Todo' as NoteTag }}
+      initialValues={{ title: "", content: "", tag: "Todo" as NoteTag }}
       validationSchema={validationSchema}
       onSubmit={async (values) => {
-        await onSubmit(values)
+        await onSubmit(values);
       }}
     >
       {({ isSubmitting }) => (
         <Form className={css.form}>
           <div className={css.formGroup}>
             <label htmlFor="title">Title</label>
-            <Field
-              id="title"
-              type="text"
-              name="title"
-              className={css.input}
-            />
-            <ErrorMessage
-              name="title"
-              component="span"
-              className={css.error}
-            />
+            <Field id="title" type="text" name="title" className={css.input} />
+            <ErrorMessage name="title" component="span" className={css.error} />
           </div>
 
           <div className={css.formGroup}>
@@ -99,8 +90,7 @@ const NoteForm = ({ onSubmit, onCancel, isCreating }: NoteFormProps) => {
         </Form>
       )}
     </Formik>
-  )
-}
+  );
+};
 
-export default NoteForm
-
+export default NoteForm;

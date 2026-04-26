@@ -1,81 +1,79 @@
-import { useState, useCallback } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useDebouncedCallback } from 'use-debounce'
-import SearchBox from '../SearchBox/SearchBox'
-import Pagination from '../Pagination/Pagination'
-import Modal from '../Modal/Modal'
-import NoteForm from '../NoteForm/NoteForm'
-import NoteList from '../NoteList/NoteList'
-import { fetchNotes, createNote, deleteNote } from '../../services/noteService'
-import type { CreateNoteParams } from '../../services/noteService'
-import css from './App.module.css'
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDebouncedCallback } from "use-debounce";
+import SearchBox from "../SearchBox/SearchBox";
+import Pagination from "../Pagination/Pagination";
+import Modal from "../Modal/Modal";
+import NoteForm from "../NoteForm/NoteForm";
+import NoteList from "../NoteList/NoteList";
+import { fetchNotes, createNote, deleteNote } from "../../services/noteService";
+import type { CreateNoteParams } from "../../services/noteService";
+import css from "./App.module.css";
 
-const PER_PAGE = 12
+const PER_PAGE = 12;
 
 const App = () => {
-  const [page, setPage] = useState(0)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [page, setPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const debouncedSetSearch = useDebouncedCallback((value: string) => {
-    setDebouncedSearch(value)
-    setPage(0)
-  }, 500)
+    setDebouncedSearch(value);
+    setPage(0);
+  }, 500);
 
-  const handleSearchChange = useCallback(
-    (value: string) => {
-      setSearchQuery(value)
-      debouncedSetSearch(value)
-    },
-    [debouncedSetSearch]
-  )
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    debouncedSetSearch(value);
+  };
 
   const {
     data: notesData,
     isLoading,
     isError,
+    error,
   } = useQuery({
-    queryKey: ['notes', page, debouncedSearch],
+    queryKey: ["notes", page, debouncedSearch],
     queryFn: () =>
       fetchNotes({
         page: page + 1,
         perPage: PER_PAGE,
         search: debouncedSearch || undefined,
       }),
-  })
+  });
 
   const createNoteMutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] })
-      setIsModalOpen(false)
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      setIsModalOpen(false);
     },
-  })
+  });
 
   const deleteNoteMutation = useMutation({
     mutationFn: deleteNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] })
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
-  })
+  });
 
   const handlePageChange = ({ selected }: { selected: number }) => {
-    setPage(selected)
-  }
+    setPage(selected);
+  };
 
   const handleCreateNote = async (values: CreateNoteParams) => {
-    await createNoteMutation.mutateAsync(values)
-  }
+    await createNoteMutation.mutateAsync(values);
+  };
 
   const handleDeleteNote = (id: string) => {
-    deleteNoteMutation.mutate(id)
-  }
+    deleteNoteMutation.mutate(id);
+  };
 
-  const notes = notesData?.data ?? []
-  const pageCount = notesData?.totalPages ?? 0
+  const notes = notesData?.notes ?? [];
+  const pageCount = notesData?.totalPages ?? 0;
 
   return (
     <div className={css.app}>
@@ -95,8 +93,12 @@ const App = () => {
         </button>
       </header>
 
-      {isLoading && <p>Loading notes...</p>}
-      {isError && <p>Failed to load notes.</p>}
+      {isLoading && <p className={css.status}>Loading notes...</p>}
+      {isError && (
+        <p className={css.error}>
+          {error instanceof Error ? error.message : "Failed to load notes."}
+        </p>
+      )}
 
       <NoteList notes={notes} onDelete={handleDeleteNote} />
 
@@ -108,8 +110,7 @@ const App = () => {
         />
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default App
-
+export default App;

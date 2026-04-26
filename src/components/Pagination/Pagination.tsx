@@ -1,23 +1,28 @@
-import type { ComponentType } from 'react'
-import ReactPaginateModule, { type ReactPaginateProps } from 'react-paginate'
-import css from './Pagination.module.css'
+import type { ComponentType } from "react";
+import ReactPaginateModule, { type ReactPaginateProps } from "react-paginate";
+import css from "./Pagination.module.css";
 
 const ReactPaginate =
   (
     ReactPaginateModule as unknown as {
-      default?: ComponentType<ReactPaginateProps>
+      default?: ComponentType<ReactPaginateProps>;
     }
-  ).default ?? (ReactPaginateModule as unknown as ComponentType<ReactPaginateProps>)
+  ).default ??
+  (ReactPaginateModule as unknown as ComponentType<ReactPaginateProps>);
 
 export interface PaginationProps {
-  pageCount: ReactPaginateProps['pageCount']
-  onPageChange: NonNullable<ReactPaginateProps['onPageChange']>
-  forcePage?: ReactPaginateProps['forcePage']
+  pageCount: ReactPaginateProps["pageCount"];
+  onPageChange: NonNullable<ReactPaginateProps["onPageChange"]>;
+  forcePage?: ReactPaginateProps["forcePage"];
 }
 
-const Pagination = ({ pageCount, onPageChange, forcePage }: PaginationProps) => {
+const Pagination = ({
+  pageCount,
+  onPageChange,
+  forcePage,
+}: PaginationProps) => {
   if (pageCount <= 1) {
-    return null
+    return null;
   }
 
   return (
@@ -33,8 +38,7 @@ const Pagination = ({ pageCount, onPageChange, forcePage }: PaginationProps) => 
       activeClassName={css.active}
       forcePage={forcePage}
     />
-  )
-}
+  );
+};
 
-export default Pagination
-
+export default Pagination;
